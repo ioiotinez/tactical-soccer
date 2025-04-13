@@ -1,5 +1,7 @@
+/* Adjust field size to 90% of the total width */
 .field {
-  width: 100%;
+  width: 90%;
+  margin: 0 auto; /* Center the field */
   height: 500px;
   background-color: #4caf50;
   position: relative;

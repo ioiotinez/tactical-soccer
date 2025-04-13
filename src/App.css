@@ -36,3 +36,47 @@
     transform: rotate(360deg);
   }
 }
+
+/* Modernize the header design */
+.elegant-header {
+  background: linear-gradient(90deg, #4CAF50, #2E7D32); /* Gradient green background */
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 28px; /* Slightly larger font */
+  font-weight: bold;
+  border-radius: 12px; /* More rounded corners */
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+  letter-spacing: 1.2px; /* Add spacing between letters */
+  text-transform: uppercase; /* Make text uppercase */
+}
+
+/* Style the team control buttons and add spacing */
+.team-controls {
+  margin-top: 20px; /* Add space above the buttons */
+  display: flex;
+  justify-content: center;
+  gap: 15px; /* Add space between buttons */
+}
+
+.team-controls button {
+  background-color: #2196F3; /* Blue background */
+  color: white; /* White text */
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.team-controls button:hover {
+  background-color: #1976D2; /* Darker blue on hover */
+  transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.team-controls button:active {
+  background-color: #1565C0; /* Even darker blue on click */
+  transform: scale(0.95); /* Slightly shrink on click */
+}
