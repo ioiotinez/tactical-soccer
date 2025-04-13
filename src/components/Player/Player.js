@@ -26,8 +26,16 @@ const Player = ({ id, left, top, team, color, name, number }) => {
 				backgroundColor: color,
 				boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
 				opacity: isDragging ? 0.5 : 1,
+				display: "flex",
+				justifyContent: "center",
+				alignItems: "center",
+				color: "white",
+				fontWeight: "bold",
+				fontSize: "14px",
 			}}
-		></div>
+		>
+			{id}
+		</div>
 	);
 };
 

@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import Player from "../../components/Player/Player";
+import CentralCircle from "../../components/CentralCircle/CentralCircle";
+import Arrow from "../../components/Arrow/Arrow";
+import TrashZone from "../../components/TrashZone/TrashZone";
 import "../../styles/Field.css";
 import { useDrop } from "react-dnd";
-
-const calculateAngle = (x1, y1, x2, y2) => {
-	return (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
-};
+import {
+	presetFormations,
+	mirrorFormation,
+} from "../../utils/presetFormations";
 
 const Field = () => {
 	const [players, setPlayers] = useState({
@@ -16,8 +19,8 @@ const Field = () => {
 	const [arrows, setArrows] = useState([]);
 	const [arrowColor, setArrowColor] = useState("black");
 
-	const handleArrowColorChange = (color) => {
-		setArrowColor(color);
+	const getSafePlayers = (team) => {
+		return players[team] || {}; // Ensure players[team] is always an object
 	};
 
 	const [, drop] = useDrop(() => ({
@@ -57,8 +60,30 @@ const Field = () => {
 		},
 	}));
 
+	const setFormation = (team, formation) => {
+		const fieldWidth = document.querySelector(".field").offsetWidth; // Get the actual field width
+		setPlayers((prevPlayers) => {
+			const baseFormation = presetFormations[formation];
+			const newPlayers = (
+				team === "team2"
+					? mirrorFormation(baseFormation, fieldWidth)
+					: baseFormation
+			)
+				.slice(0, 11)
+				.reduce((acc, position, index) => {
+					acc[index + 1] = { ...position, name: `Player ${index + 1}` };
+					return acc;
+				}, {});
+			return {
+				...prevPlayers,
+				[team]: newPlayers,
+			};
+		});
+	};
+
 	const addPlayerToTeam = (team) => {
 		setPlayers((prevPlayers) => {
+			if (Object.keys(prevPlayers[team]).length >= 11) return prevPlayers; // Limit to 11 players
 			const newId = Object.keys(prevPlayers[team]).length + 1;
 			const defaultPosition =
 				team === "team1"
@@ -72,14 +97,6 @@ const Field = () => {
 				},
 			};
 		});
-	};
-
-	const handleFieldClick = (e) => {
-		if (!isArrowMode) return;
-		const rect = e.target.getBoundingClientRect();
-		const x = e.clientX - rect.left;
-		const y = e.clientY - rect.top;
-		setArrows((prevArrows) => [...prevArrows, { x, y, endX: x + 50, endY: y }]);
 	};
 
 	const handleFieldMouseDown = (e) => {
@@ -128,113 +145,174 @@ const Field = () => {
 		setArrowColor(color);
 	};
 
-	const clearArrows = () => {
-		setArrows([]);
+	const renderPlayers = (team, color) => {
+		const safePlayers = getSafePlayers(team);
+		return Object.entries(safePlayers).map(([id, { left, top, name }]) => (
+			<Player
+				key={`${team}-${id}`}
+				id={id}
+				left={left}
+				top={top}
+				team={team}
+				color={color}
+				name={`${name} (#${id})`}
+			/>
+		));
 	};
 
 	return (
 		<div>
-			<div style={{ marginBottom: "10px" }}>
-				<button
-					onClick={() => addPlayerToTeam("team1")}
-					style={{ marginRight: "10px" }}
-				>
-					Add Player to Team 1
-				</button>
-				<button onClick={() => addPlayerToTeam("team2")}>
-					Add Player to Team 2
-				</button>
-				<button onClick={clearArrows} style={{ marginRight: "10px" }}>
-					Clear All Arrows
-				</button>
-				<button
-					onClick={() => toggleArrowMode("blue")}
-					style={{
-						marginRight: "10px",
-						backgroundColor: "blue",
-						color: "white",
-					}}
-				>
-					{isArrowMode && arrowColor === "blue"
-						? "Disable Blue Arrows"
-						: "Enable Blue Arrows"}
-				</button>
-				<button
-					onClick={() => toggleArrowMode("red")}
-					style={{
-						marginRight: "10px",
-						backgroundColor: "red",
-						color: "white",
-					}}
-				>
-					{isArrowMode && arrowColor === "red"
-						? "Disable Red Arrows"
-						: "Enable Red Arrows"}
-				</button>
-			</div>
+			<header style={{ marginBottom: "20px", textAlign: "center" }}>
+				<h1>Pizzara de Futbol</h1>
+			</header>
 			<div
 				ref={drop}
 				className="field"
 				onMouseDown={handleFieldMouseDown}
 				onMouseMove={handleFieldMouseMove}
 				onMouseUp={handleFieldMouseUp}
-				style={{ position: "relative" }}
+				style={{ position: "relative", marginBottom: "20px" }}
 			>
+				{/* Central circle */}
+				<CentralCircle />
 				{/* Render arrows */}
 				{arrows.map((arrow, index) => (
-					<svg
+					<Arrow
 						key={index}
-						style={{ position: "absolute", left: 0, top: 0 }}
-						height="100%"
-						width="100%"
-					>
-						<line
-							x1={arrow.x}
-							y1={arrow.y}
-							x2={arrow.endX}
-							y2={arrow.endY}
-							style={{ stroke: arrow.color, strokeWidth: 2 }}
-						/>
-						<circle cx={arrow.endX} cy={arrow.endY} r={5} fill={arrow.color} />
-					</svg>
+						x1={arrow.x}
+						y1={arrow.y}
+						x2={arrow.endX}
+						y2={arrow.endY}
+						color={arrow.color}
+					/>
 				))}
 				{/* Render players */}
-				{Object.entries(players.team1).map(([id, { left, top, name }]) => (
-					<Player
-						key={`team1-${id}`}
-						id={id}
-						left={left}
-						top={top}
-						team="team1"
-						color="blue"
-						name={name}
-					/>
-				))}
-				{Object.entries(players.team2).map(([id, { left, top, name }]) => (
-					<Player
-						key={`team2-${id}`}
-						id={id}
-						left={left}
-						top={top}
-						team="team2"
-						color="red"
-						name={name}
-					/>
-				))}
+				{renderPlayers("team1", "blue")}
+				{renderPlayers("team2", "red")}
 			</div>
 			<div
-				ref={trashDrop}
 				style={{
-					marginTop: "20px",
-					height: "50px",
-					backgroundColor: "#f44336",
-					color: "white",
-					textAlign: "center",
-					lineHeight: "50px",
+					display: "flex",
+					justifyContent: "space-between",
+					marginTop: "10px",
 				}}
 			>
-				Drag here to delete
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "flex-start",
+					}}
+				>
+					<select
+						onChange={(e) => setFormation("team1", e.target.value)}
+						style={{
+							marginBottom: "10px",
+							padding: "10px 20px",
+							borderRadius: "5px",
+							backgroundColor: "#007bff",
+							color: "white",
+							border: "none",
+							cursor: "pointer",
+						}}
+					>
+						<option value="">Select Formation</option>
+						{Object.keys(presetFormations).map((formation) => (
+							<option key={formation} value={formation}>
+								{formation}
+							</option>
+						))}
+					</select>
+					<button
+						onClick={() => addPlayerToTeam("team1")}
+						style={{
+							marginBottom: "10px",
+							padding: "10px 20px",
+							borderRadius: "5px",
+							backgroundColor: "#007bff",
+							color: "white",
+							border: "none",
+							cursor: "pointer",
+						}}
+					>
+						Add Player to Team 1
+					</button>
+					<button
+						onClick={() => toggleArrowMode("blue")}
+						style={{
+							marginBottom: "10px",
+							padding: "10px 20px",
+							borderRadius: "5px",
+							backgroundColor: "blue",
+							color: "white",
+							border: "none",
+							cursor: "pointer",
+						}}
+					>
+						{isArrowMode && arrowColor === "blue"
+							? "Disable Blue Arrows"
+							: "Enable Blue Arrows"}
+					</button>
+				</div>
+				<div
+					style={{
+						display: "flex",
+						flexDirection: "column",
+						alignItems: "flex-end",
+					}}
+				>
+					<select
+						onChange={(e) => setFormation("team2", e.target.value)}
+						style={{
+							marginBottom: "10px",
+							padding: "10px 20px",
+							borderRadius: "5px",
+							backgroundColor: "#dc3545",
+							color: "white",
+							border: "none",
+							cursor: "pointer",
+						}}
+					>
+						<option value="">Select Formation</option>
+						{Object.keys(presetFormations).map((formation) => (
+							<option key={formation} value={formation}>
+								{formation}
+							</option>
+						))}
+					</select>
+					<button
+						onClick={() => addPlayerToTeam("team2")}
+						style={{
+							marginBottom: "10px",
+							padding: "10px 20px",
+							borderRadius: "5px",
+							backgroundColor: "#dc3545",
+							color: "white",
+							border: "none",
+							cursor: "pointer",
+						}}
+					>
+						Add Player to Team 2
+					</button>
+					<button
+						onClick={() => toggleArrowMode("red")}
+						style={{
+							marginBottom: "10px",
+							padding: "10px 20px",
+							borderRadius: "5px",
+							backgroundColor: "red",
+							color: "white",
+							border: "none",
+							cursor: "pointer",
+						}}
+					>
+						{isArrowMode && arrowColor === "red"
+							? "Disable Red Arrows"
+							: "Enable Red Arrows"}
+					</button>
+				</div>
 			</div>
+			<TrashZone ref={trashDrop} />
 		</div>
 	);
 };
