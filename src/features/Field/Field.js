@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useDrop } from "react-dnd";
 import Player from "../../components/Player/Player";
+import Ball from "../../components/Ball/Ball";
 import CentralCircle from "../../components/CentralCircle/CentralCircle";
 import TeamControls from "../../components/TeamControls/TeamControls";
 import KeyboardShortcuts from "../../components/KeyboardShortcuts/KeyboardShortcuts";
@@ -9,10 +10,12 @@ import {
 	presetFormations,
 	mirrorFormation,
 } from "../../utils/presetFormations";
+import { importFormation, exportFormation } from "../../utils/formationUtils";
 import "../../styles/Field.css";
 
 const Field = () => {
 	const [players, setPlayers] = useState({ team1: {}, team2: {} });
+	const [ballPosition, setBallPosition] = useState({ left: 400, top: 300 });
 	const [isArrowMode, setIsArrowMode] = useState(false);
 	const [isRectangleMode, setIsRectangleMode] = useState(false);
 	const [arrowColor, setArrowColor] = useState("black");
@@ -74,10 +77,18 @@ const Field = () => {
 	}, [toggleArrowMode, toggleRectangleMode, addPlayerToTeam]);
 
 	const [, drop] = useDrop(() => ({
-		accept: "player",
+		accept: ["player", "ball"],
 		drop: (item, monitor) => {
 			const delta = monitor.getDifferenceFromInitialOffset();
 			if (!delta) return;
+
+			if (item.type === "ball") {
+				setBallPosition((prev) => ({
+					left: prev.left + delta.x,
+					top: prev.top + delta.y,
+				}));
+				return;
+			}
 
 			setPlayers((prevPlayers) => {
 				const team = item.team;
@@ -170,6 +181,32 @@ const Field = () => {
 		}
 	};
 
+	const handleExportFormation = (team) => {
+		const formation = players[team];
+		exportFormation(formation, team);
+	};
+
+	const handleImportFormation = (team, event) => {
+		const file = event.target.files[0];
+		if (file) {
+			importFormation(file)
+				.then((formation) => {
+					setPlayers((prevPlayers) => ({
+						...prevPlayers,
+						[team]: formation,
+					}));
+				})
+				.catch((error) => {
+					console.error("Error al importar la formación:", error);
+					alert(
+						error.message || "Error al importar el archivo. Formato inválido."
+					);
+				});
+		}
+		// Limpiar el input para permitir cargar el mismo archivo nuevamente
+		event.target.value = "";
+	};
+
 	return (
 		<div>
 			<header className="field-header">
@@ -189,6 +226,8 @@ const Field = () => {
 					onAddPlayer={addPlayerToTeam}
 					onToggleArrow={toggleArrowMode}
 					onToggleRectangle={toggleRectangleMode}
+					onExport={() => handleExportFormation("team1")}
+					onImport={(e) => handleImportFormation("team1", e)}
 				/>
 				<TeamControls
 					team="team2"
@@ -202,11 +241,14 @@ const Field = () => {
 					onAddPlayer={addPlayerToTeam}
 					onToggleArrow={toggleArrowMode}
 					onToggleRectangle={toggleRectangleMode}
+					onExport={() => handleExportFormation("team2")}
+					onImport={(e) => handleImportFormation("team2", e)}
 				/>
 			</div>
 
 			<div ref={drop} className="field">
 				<CentralCircle />
+				<Ball left={ballPosition.left} top={ballPosition.top} />
 				<DrawingLayer
 					isArrowMode={isArrowMode}
 					isRectangleMode={isRectangleMode}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import "../../styles/TeamControls.css";
 
 const TeamControls = ({
@@ -13,11 +13,18 @@ const TeamControls = ({
 	onAddPlayer,
 	onToggleArrow,
 	onToggleRectangle,
+	onExport,
+	onImport,
 }) => {
+	const fileInputRef = useRef(null);
 	const isBlue = color === "blue";
 	const colorClass = isBlue ? "blue" : "red";
 	const activeArrow = isArrowMode && arrowColor === color;
 	const activeRectangle = isRectangleMode && rectangleColor === color;
+
+	const handleImportClick = () => {
+		fileInputRef.current?.click();
+	};
 
 	return (
 		<div className={`team-control-panel ${colorClass}`}>
@@ -58,6 +65,27 @@ const TeamControls = ({
 				>
 					□
 				</button>
+				<button
+					onClick={onExport}
+					className={`control-button ${colorClass}`}
+					title={`Exportar Formación Equipo ${isBlue ? "1" : "2"}`}
+				>
+					⬇
+				</button>
+				<button
+					onClick={handleImportClick}
+					className={`control-button ${colorClass}`}
+					title={`Importar Formación Equipo ${isBlue ? "1" : "2"}`}
+				>
+					⬆
+				</button>
+				<input
+					ref={fileInputRef}
+					type="file"
+					accept=".json"
+					style={{ display: "none" }}
+					onChange={onImport}
+				/>
 			</div>
 		</div>
 	);

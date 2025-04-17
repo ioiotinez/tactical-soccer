@@ -1,0 +1,11 @@
+.ball {
+    width: 30px;
+    height: 30px;
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    user-select: none;
+    pointer-events: auto;
+    touch-action: none;
+}
