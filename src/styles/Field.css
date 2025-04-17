@@ -1,7 +1,7 @@
-/* Adjust field size to 90% of the total width */
+/* Field container */
 .field {
   width: 90%;
-  margin: 0 auto; /* Center the field */
+  margin: 0 auto;
   height: 500px;
   background-color: #4caf50;
   position: relative;
@@ -9,8 +9,22 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-bottom: 20px;
 }
 
+/* Field header */
+.field-header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.field-header h1 {
+  color: #333;
+  font-size: 32px;
+  margin: 0;
+}
+
+/* Field markings */
 .field::before {
   content: "";
   position: absolute;
@@ -31,7 +45,7 @@
   transform: translateX(-50%);
 }
 
-/* Add penalty area lines */
+/* Penalty areas */
 .field .penalty-area {
   position: absolute;
   width: 150px;
@@ -48,10 +62,10 @@
   border: 2px solid white;
   top: 100px;
   right: 5%;
-  transform: translateX(2px); /* Adjust alignment with the field line */
+  transform: translateX(2px);
 }
 
-/* Add center circle */
+/* Center circle styles inherited from CentralCircle component */
 .field .center-circle {
   position: absolute;
   width: 100px;

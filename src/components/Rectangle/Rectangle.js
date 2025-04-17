@@ -22,8 +22,9 @@ const Rectangle = ({ x1, y1, x2, y2, color }) => {
 				width: width,
 				height: height,
 				border: `2px solid ${hexColor}`,
-				backgroundColor: `${hexColor}40`, // Aumentado a 40 (25% opacidad)
-				pointerEvents: "none",
+				backgroundColor: `${hexColor}40`,
+				pointerEvents: "auto",
+				cursor: "pointer",
 			}}
 		/>
 	);

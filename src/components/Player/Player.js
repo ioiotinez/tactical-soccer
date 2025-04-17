@@ -9,7 +9,6 @@ const Player = ({
 	team,
 	color,
 	name,
-	number,
 	onDelete,
 	onNameChange,
 }) => {
@@ -24,11 +23,6 @@ const Player = ({
 			isDragging: monitor.isDragging(),
 		}),
 	}));
-
-	const handleDelete = (e) => {
-		e.stopPropagation();
-		onDelete(id);
-	};
 
 	const handleNameClick = (e) => {
 		e.stopPropagation();
@@ -50,6 +44,14 @@ const Player = ({
 		}
 	};
 
+	const handleDeleteClick = (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (onDelete) {
+			onDelete();
+		}
+	};
+
 	return (
 		<div
 			style={{
@@ -61,9 +63,11 @@ const Player = ({
 				flexDirection: "column",
 				alignItems: "center",
 				gap: "5px",
-				pointerEvents: "none",
-				zIndex: 1,
+				userSelect: "none",
+				pointerEvents: "auto",
 			}}
+			onMouseEnter={() => setIsHovered(true)}
+			onMouseLeave={() => setIsHovered(false)}
 		>
 			<div
 				ref={drag}
@@ -83,51 +87,35 @@ const Player = ({
 					fontSize: "14px",
 					cursor: "move",
 					padding: "8px",
-					pointerEvents: "auto",
 					position: "relative",
-					zIndex: 2,
-				}}
-				onMouseEnter={() => setIsHovered(true)}
-				onMouseLeave={(e) => {
-					const rect = e.currentTarget.getBoundingClientRect();
-					const isOverDeleteButton =
-						e.clientX >= rect.right - 24 &&
-						e.clientX <= rect.right + 8 &&
-						e.clientY >= rect.top - 8 &&
-						e.clientY <= rect.top + 24;
-
-					if (!isOverDeleteButton) {
-						setIsHovered(false);
-					}
 				}}
 			>
 				{id}
 				{isHovered && (
-					<button
-						onClick={handleDelete}
-						onMouseEnter={() => setIsHovered(true)}
+					<div
+						onClick={handleDeleteClick}
 						style={{
 							position: "absolute",
-							top: "-8px",
-							right: "-8px",
-							width: "16px",
-							height: "16px",
+							top: "-10px",
+							right: "-10px",
+							width: "24px",
+							height: "24px",
 							backgroundColor: "red",
 							color: "white",
-							border: "none",
+							border: "2px solid white",
 							borderRadius: "50%",
 							display: "flex",
 							justifyContent: "center",
 							alignItems: "center",
-							fontSize: "12px",
+							fontSize: "16px",
 							cursor: "pointer",
-							padding: 0,
-							lineHeight: 1,
-							zIndex: 3,
+							zIndex: 1000,
+							pointerEvents: "auto",
+							boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
 						}}
 					>
 						×
-					</button>
+					</div>
 				)}
 			</div>
 			<div
