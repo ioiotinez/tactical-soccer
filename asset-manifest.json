@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/tactical-soccer/static/css/main.20843191.css",
+    "main.js": "/tactical-soccer/static/js/main.59f113d7.js",
+    "static/js/453.18ed438f.chunk.js": "/tactical-soccer/static/js/453.18ed438f.chunk.js",
+    "index.html": "/tactical-soccer/index.html",
+    "main.20843191.css.map": "/tactical-soccer/static/css/main.20843191.css.map",
+    "main.59f113d7.js.map": "/tactical-soccer/static/js/main.59f113d7.js.map",
+    "453.18ed438f.chunk.js.map": "/tactical-soccer/static/js/453.18ed438f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.20843191.css",
+    "static/js/main.59f113d7.js"
+  ]
+}
