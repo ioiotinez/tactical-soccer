@@ -108,40 +108,6 @@ const DrawingLayer = ({
 		}
 	};
 
-	const DeleteButton = ({ onClick }) => (
-		<div
-			onClick={onClick}
-			style={{
-				position: "absolute",
-				width: "24px",
-				height: "24px",
-				backgroundColor: "red",
-				color: "white",
-				border: "2px solid white",
-				borderRadius: "50%",
-				display: "flex",
-				justifyContent: "center",
-				alignItems: "center",
-				fontSize: "16px",
-				cursor: "pointer",
-				zIndex: 1000,
-				pointerEvents: "auto",
-				boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-			}}
-		>
-			×
-		</div>
-	);
-
-	const getDeleteButtonPosition = (shape) => {
-		const midX = (shape.x + shape.endX) / 2;
-		const midY = (shape.y + shape.endY) / 2;
-		return {
-			left: `${midX - 12}px`,
-			top: `${midY - 12}px`,
-		};
-	};
-
 	return (
 		<div
 			style={{ position: "absolute", inset: 0 }}
@@ -149,58 +115,132 @@ const DrawingLayer = ({
 			onMouseMove={handleMouseMove}
 			onMouseUp={handleMouseUp}
 		>
-			{arrows.map((arrow, index) => (
-				<div
-					key={`arrow-${index}`}
-					style={{ position: "relative" }}
-					onMouseEnter={() => setHoveredShape(`arrow-${index}`)}
-					onMouseLeave={() => setHoveredShape(null)}
-				>
-					<Arrow
-						x1={arrow.x}
-						y1={arrow.y}
-						x2={arrow.endX}
-						y2={arrow.endY}
-						color={arrow.color}
-					/>
-					{hoveredShape === `arrow-${index}` && (
-						<div style={getDeleteButtonPosition(arrow)}>
-							<DeleteButton
+			{arrows.map((arrow, index) => {
+				const isHovered = hoveredShape === `arrow-${index}`;
+				const width = Math.abs(arrow.endX - arrow.x);
+				const height = Math.abs(arrow.endY - arrow.y);
+				const left = Math.min(arrow.x, arrow.endX);
+				const top = Math.min(arrow.y, arrow.endY);
+				const x1 = arrow.x < arrow.endX ? 0 : width;
+				const y1 = arrow.y < arrow.endY ? 0 : height;
+				const x2 = arrow.x < arrow.endX ? width : 0;
+				const y2 = arrow.y < arrow.endY ? height : 0;
+				return (
+					<div
+						key={`arrow-${index}`}
+						style={{
+							position: "absolute",
+							left,
+							top,
+							width,
+							height,
+							pointerEvents: "auto",
+						}}
+						onMouseEnter={() => setHoveredShape(`arrow-${index}`)}
+						onMouseLeave={(e) => {
+							if (!e.currentTarget.contains(e.relatedTarget)) {
+								setHoveredShape(null);
+							}
+						}}
+					>
+						<Arrow x1={x1} y1={y1} x2={x2} y2={y2} color={arrow.color} />
+						{isHovered && (
+							<button
+								style={{
+									position: "absolute",
+									top: 0,
+									right: 0,
+									zIndex: 1001,
+									width: 24,
+									height: 24,
+									backgroundColor: "red",
+									color: "white",
+									border: "2px solid white",
+									borderRadius: "50%",
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									fontSize: 16,
+									cursor: "pointer",
+									boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+									padding: 0,
+								}}
 								onClick={(e) => {
 									e.stopPropagation();
 									handleDeleteShape("arrow", index);
 								}}
-							/>
-						</div>
-					)}
-				</div>
-			))}
-			{rectangles.map((rect, index) => (
-				<div
-					key={`rect-${index}`}
-					style={{ position: "relative" }}
-					onMouseEnter={() => setHoveredShape(`rect-${index}`)}
-					onMouseLeave={() => setHoveredShape(null)}
-				>
-					<Rectangle
-						x1={rect.x}
-						y1={rect.y}
-						x2={rect.endX}
-						y2={rect.endY}
-						color={rect.color}
-					/>
-					{hoveredShape === `rect-${index}` && (
-						<div style={getDeleteButtonPosition(rect)}>
-							<DeleteButton
+								onMouseDown={(e) => e.stopPropagation()}
+							>
+								×
+							</button>
+						)}
+					</div>
+				);
+			})}
+			{rectangles.map((rect, index) => {
+				const isHovered = hoveredShape === `rect-${index}`;
+				const width = Math.abs(rect.endX - rect.x);
+				const height = Math.abs(rect.endY - rect.y);
+				const left = Math.min(rect.x, rect.endX);
+				const top = Math.min(rect.y, rect.endY);
+				return (
+					<div
+						key={`rect-${index}`}
+						style={{
+							position: "absolute",
+							left,
+							top,
+							width,
+							height,
+							pointerEvents: "auto",
+						}}
+						onMouseEnter={() => setHoveredShape(`rect-${index}`)}
+						onMouseLeave={(e) => {
+							if (!e.currentTarget.contains(e.relatedTarget)) {
+								setHoveredShape(null);
+							}
+						}}
+					>
+						<Rectangle
+							x1={0}
+							y1={0}
+							x2={width}
+							y2={height}
+							color={rect.color}
+						/>
+						{isHovered && (
+							<button
+								style={{
+									position: "absolute",
+									top: 0,
+									right: 0,
+									zIndex: 1001,
+									width: 24,
+									height: 24,
+									backgroundColor: "red",
+									color: "white",
+									border: "2px solid white",
+									borderRadius: "50%",
+									display: "flex",
+									justifyContent: "center",
+									alignItems: "center",
+									fontSize: 16,
+									cursor: "pointer",
+									boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+									padding: 0,
+								}}
 								onClick={(e) => {
 									e.stopPropagation();
 									handleDeleteShape("rectangle", index);
 								}}
-							/>
-						</div>
-					)}
-				</div>
-			))}
+								onMouseDown={(e) => e.stopPropagation()}
+							>
+								×
+							</button>
+						)}
+					</div>
+				);
+			})}
 		</div>
 	);
 };

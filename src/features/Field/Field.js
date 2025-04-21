@@ -20,6 +20,10 @@ const Field = () => {
 	const [isRectangleMode, setIsRectangleMode] = useState(false);
 	const [arrowColor, setArrowColor] = useState("black");
 	const [rectangleColor, setRectangleColor] = useState("black");
+	const [isAnyPlayerEditing, setIsAnyPlayerEditing] = useState(false);
+
+	const handleEditStart = useCallback(() => setIsAnyPlayerEditing(true), []);
+	const handleEditEnd = useCallback(() => setIsAnyPlayerEditing(false), []);
 
 	const toggleArrowMode = useCallback(
 		(color) => {
@@ -57,6 +61,7 @@ const Field = () => {
 
 	useEffect(() => {
 		const handleKeyDown = (e) => {
+			if (isAnyPlayerEditing) return;
 			switch (e.key.toLowerCase()) {
 				case "r":
 					toggleRectangleMode(e.shiftKey ? "red" : "blue");
@@ -74,7 +79,12 @@ const Field = () => {
 
 		window.addEventListener("keydown", handleKeyDown);
 		return () => window.removeEventListener("keydown", handleKeyDown);
-	}, [toggleArrowMode, toggleRectangleMode, addPlayerToTeam]);
+	}, [
+		toggleArrowMode,
+		toggleRectangleMode,
+		addPlayerToTeam,
+		isAnyPlayerEditing,
+	]);
 
 	const [, drop] = useDrop(() => ({
 		accept: ["player", "ball"],
@@ -146,6 +156,8 @@ const Field = () => {
 					onNameChange={(id, newName) =>
 						handlePlayerNameChange(team, id, newName)
 					}
+					onEditStart={handleEditStart}
+					onEditEnd={handleEditEnd}
 				/>
 			)
 		);
@@ -224,10 +236,13 @@ const Field = () => {
 					rectangleColor={rectangleColor}
 					onFormationChange={handleFormationChange}
 					onAddPlayer={addPlayerToTeam}
-					onToggleArrow={toggleArrowMode}
-					onToggleRectangle={toggleRectangleMode}
+					onToggleArrow={isAnyPlayerEditing ? () => {} : toggleArrowMode}
+					onToggleRectangle={
+						isAnyPlayerEditing ? () => {} : toggleRectangleMode
+					}
 					onExport={() => handleExportFormation("team1")}
 					onImport={(e) => handleImportFormation("team1", e)}
+					disabled={isAnyPlayerEditing}
 				/>
 				<TeamControls
 					team="team2"
@@ -239,10 +254,13 @@ const Field = () => {
 					rectangleColor={rectangleColor}
 					onFormationChange={handleFormationChange}
 					onAddPlayer={addPlayerToTeam}
-					onToggleArrow={toggleArrowMode}
-					onToggleRectangle={toggleRectangleMode}
+					onToggleArrow={isAnyPlayerEditing ? () => {} : toggleArrowMode}
+					onToggleRectangle={
+						isAnyPlayerEditing ? () => {} : toggleRectangleMode
+					}
 					onExport={() => handleExportFormation("team2")}
 					onImport={(e) => handleImportFormation("team2", e)}
+					disabled={isAnyPlayerEditing}
 				/>
 			</div>
 

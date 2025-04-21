@@ -1,8 +1,8 @@
 /* Placeholder styles for Player component */
 
 .player {
-  width: 50px;
-  height: 50px;
+  width: 39px;
+  height: 39px;
   background-color: blue;
   border-radius: 50%;
   display: flex;
@@ -12,4 +12,55 @@
   font-weight: bold;
   text-align: center;
   position: absolute;
+  font-size: 10.4px;
+  transition: box-shadow 0.2s;
+}
+
+.player:hover {
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.player-delete {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 23.4px;
+  height: 23.4px;
+  background-color: red;
+  color: white;
+  border: 2px solid white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 15.6px;
+  cursor: pointer;
+  z-index: 1000;
+  pointer-events: auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.player-name {
+  font-size: 10.4px;
+  margin-top: 2px;
+  max-width: 65px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .player-container {
+    transform: rotate(-90deg);
+  }
+  .player {
+    width: 28.6px !important;
+    height: 28.6px !important;
+    font-size: 7.8px !important;
+  }
+  .player-name {
+    font-size: 7.8px;
+    transform: rotate(-90deg);
+    margin-top: 1.3px;
+  }
 }

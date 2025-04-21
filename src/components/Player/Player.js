@@ -11,6 +11,8 @@ const Player = ({
 	name,
 	onDelete,
 	onNameChange,
+	onEditStart,
+	onEditEnd,
 }) => {
 	const [isHovered, setIsHovered] = useState(false);
 	const [isEditing, setIsEditing] = useState(false);
@@ -27,6 +29,7 @@ const Player = ({
 	const handleNameClick = (e) => {
 		e.stopPropagation();
 		setIsEditing(true);
+		if (onEditStart) onEditStart();
 	};
 
 	const handleNameChange = (e) => {
@@ -36,6 +39,7 @@ const Player = ({
 	const handleNameBlur = () => {
 		setIsEditing(false);
 		onNameChange(id, tempName);
+		if (onEditEnd) onEditEnd();
 	};
 
 	const handleKeyPress = (e) => {
@@ -54,6 +58,7 @@ const Player = ({
 
 	return (
 		<div
+			className="player-container"
 			style={{
 				position: "absolute",
 				left: `${left}px`,
@@ -73,52 +78,22 @@ const Player = ({
 				ref={drag}
 				className="player"
 				style={{
-					width: "50px",
-					height: "50px",
-					borderRadius: "50%",
 					backgroundColor: color,
 					boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
 					opacity: isDragging ? 0.5 : 1,
-					display: "flex",
-					justifyContent: "center",
-					alignItems: "center",
-					color: "white",
-					fontWeight: "bold",
-					fontSize: "14px",
 					cursor: "move",
-					padding: "8px",
 					position: "relative",
 				}}
 			>
 				{id}
 				{isHovered && (
-					<div
-						onClick={handleDeleteClick}
-						style={{
-							position: "absolute",
-							top: "-10px",
-							right: "-10px",
-							width: "24px",
-							height: "24px",
-							backgroundColor: "red",
-							color: "white",
-							border: "2px solid white",
-							borderRadius: "50%",
-							display: "flex",
-							justifyContent: "center",
-							alignItems: "center",
-							fontSize: "16px",
-							cursor: "pointer",
-							zIndex: 1000,
-							pointerEvents: "auto",
-							boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
-						}}
-					>
+					<div onClick={handleDeleteClick} className="player-delete">
 						×
 					</div>
 				)}
 			</div>
 			<div
+				className="player-name"
 				style={{
 					position: "relative",
 					zIndex: 2,
@@ -134,9 +109,9 @@ const Player = ({
 						onBlur={handleNameBlur}
 						onKeyPress={handleKeyPress}
 						style={{
-							width: "60px",
+							width: "40px",
 							padding: "2px",
-							fontSize: "12px",
+							fontSize: "8px",
 							textAlign: "center",
 							border: `1px solid ${color}`,
 							borderRadius: "3px",
@@ -148,13 +123,13 @@ const Player = ({
 					<div
 						onClick={handleNameClick}
 						style={{
-							fontSize: "12px",
+							fontSize: "8px",
 							color: "white",
 							cursor: "pointer",
 							padding: "2px 4px",
 							borderRadius: "3px",
 							backgroundColor: `${color}CC`,
-							maxWidth: "80px",
+							maxWidth: "50px",
 							overflow: "hidden",
 							textOverflow: "ellipsis",
 							whiteSpace: "nowrap",
